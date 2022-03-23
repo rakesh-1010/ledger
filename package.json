@@ -1,0 +1,15 @@
+{
+    "name": "ledger-problem",
+    "version": "1.0.0",
+    "description": "Ledger Problem",
+    "main": "ledger.js",
+    "type": "module",
+    "scripts": {
+        "start": "node ledger.js",
+        "test": "mocha"
+    },
+    "license": "ISC",
+    "dependencies": {
+        "mocha": "^6.2.0"
+    }
+}
