@@ -5,7 +5,7 @@ export default class Loan {
     this.principal = principal;
     this.time = time;
     this.rate = rate;
-    this.paid = 0;
+    this.payments = [];
   }
 
   get interest() {
@@ -20,20 +20,28 @@ export default class Loan {
     return this.calcEmi();
   }
 
-  get noOfEmisLeft() {
-    return Math.round((this.amount - this.paid) / this.emi);
+  noOfEmisLeft(paid) {
+    return Math.ceil((this.amount - paid) / this.emi);
   }
 
-  set amountPaid(payment) {
-    this.paid = this.emi * payment.paidEmiCount + payment.lumpSumAmount;
+  amountPaid(emiNo) {
+    const lumpSumAmount = this.payments.reduce((a, b) => +a + +b.lumpSumAmount, 0);
+    if(this.payments.length > 0  && this.payments[0].paidEmiCount > emiNo) return emiNo * this.emi;
+    return lumpSumAmount + emiNo * this.emi;
+  }
+
+  set payment(details) {
+    if( details.lumpSumAmount > 0) this.payments.push(details);
   }
 
   calcEmi() {
-    return this.amount / (this.time * 12);
+    if(this.amount > 0) return Math.ceil(this.amount / (this.time * 12));
+    return 0;
   }
 
   calcAmount() {
-    return this.principal + this.interest;
+    if(this.time > 0) return this.principal + this.interest;
+    return 0;
   }
 
   calcInterest() {
@@ -54,7 +62,6 @@ export default class Loan {
   }
 
   static search(customer, bank) {
-    console.log(customer, bank);
     return Loan.all.find(
       (loan) => loan.bank === bank && loan.customer === customer
     );
